@@ -1,0 +1,3 @@
+[submodule "defi-aave-v3/foundry/lib/openzeppelin-contracts"]
+	path = defi-aave-v3/foundry/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
