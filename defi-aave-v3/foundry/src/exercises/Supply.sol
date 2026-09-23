@@ -5,7 +5,9 @@ import {console} from "forge-std/Test.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IPool} from "../interfaces/aave-v3/IPool.sol";
 import {POOL} from "../Constants.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {
+    SafeERC20
+} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract Supply {
     using SafeERC20 for IERC20;

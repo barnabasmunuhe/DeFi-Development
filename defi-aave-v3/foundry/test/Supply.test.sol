@@ -32,10 +32,20 @@ contract SupplyTest is Test {
 
         assertTrue(amount >= 0, "amount must be non-negative");
         assertEq(
-            wethBalBefore - wethBalAfter, amount, "WETH balance of test contract"
+            wethBalBefore - wethBalAfter,
+            amount,
+            "WETH balance of test contract"
         );
-        assertEq(weth.balanceOf(address(newSupplyContractInstance)), 0, "WETH balance of target");
-        assertGt(aWeth.balanceOf(address(newSupplyContractInstance)), 0, "aWETH balance of target");
+        assertEq(
+            weth.balanceOf(address(newSupplyContractInstance)),
+            0,
+            "WETH balance of target"
+        );
+        assertGt(
+            aWeth.balanceOf(address(newSupplyContractInstance)),
+            0,
+            "aWETH balance of target"
+        );
         assertEq(
             newSupplyContractInstance.getSupplyBalance(WETH),
             aWeth.balanceOf(address(newSupplyContractInstance)),
