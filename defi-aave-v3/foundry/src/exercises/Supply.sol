@@ -22,7 +22,7 @@ contract Supply {
         // Task 1.2 - Approve the pool contract to spend token
         IERC20(token).approve(address(pool), amount);
         // Task 1.3 - Supply token to the pool
-        IPool(POOL).supply(token, amount, address(this), 0);
+        pool.supply(token, amount, address(this), 0);
     }
 
     // Task 2 - Get supply balance

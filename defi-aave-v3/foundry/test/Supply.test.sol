@@ -11,7 +11,9 @@ contract SupplyTest is Test {
     IERC20 private constant weth = IERC20(WETH);
     IPool private constant pool = IPool(POOL);
     IERC20 private aWeth;
-    Supply private target;
+    Supply private newSupplyContractInstance;
+
+    uint256 amount = 1e18;
 
     function setUp() public {
         // Get aWETH address
@@ -19,23 +21,24 @@ contract SupplyTest is Test {
         aWeth = IERC20(reserve.aTokenAddress);
 
         deal(WETH, address(this), 1e18);
-        target = new Supply();
+        newSupplyContractInstance = new Supply();
     }
 
     function test_supply() public {
         uint256 wethBalBefore = weth.balanceOf(address(this));
-        weth.approve(address(target), 1e18);
-        target.supply(WETH, 1e18);
+        weth.approve(address(newSupplyContractInstance), amount);
+        newSupplyContractInstance.supply(WETH, amount);
         uint256 wethBalAfter = weth.balanceOf(address(this));
 
+        assertTrue(amount >= 0, "amount must be non-negative");
         assertEq(
-            wethBalBefore - wethBalAfter, 1e18, "WETH balance of test contract"
+            wethBalBefore - wethBalAfter, amount, "WETH balance of test contract"
         );
-        assertEq(weth.balanceOf(address(target)), 0, "WETH balance of target");
-        assertGt(aWeth.balanceOf(address(target)), 0, "aWETH balance of target");
+        assertEq(weth.balanceOf(address(newSupplyContractInstance)), 0, "WETH balance of target");
+        assertGt(aWeth.balanceOf(address(newSupplyContractInstance)), 0, "aWETH balance of target");
         assertEq(
-            target.getSupplyBalance(WETH),
-            aWeth.balanceOf(address(target)),
+            newSupplyContractInstance.getSupplyBalance(WETH),
+            aWeth.balanceOf(address(newSupplyContractInstance)),
             "Supply balance"
         );
     }
