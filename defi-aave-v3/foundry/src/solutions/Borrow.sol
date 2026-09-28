@@ -25,12 +25,12 @@ contract Borrow {
     function approxMaxBorrow(address token) public view returns (uint256) {
         // 1e8 = 1 USD
         uint256 price = oracle.getAssetPrice(token);
-        uint256 decimals = IERC20Metadata(token).decimals();
+        uint256 decimals = IERC20Metadata(token).decimals();//fetches whatever decimals that specific token uses
 
         (,, uint256 availableToBorrowUsd,,,) =
             pool.getUserAccountData(address(this));
 
-        return availableToBorrowUsd * (10 ** decimals) / price;
+        return availableToBorrowUsd * (10 ** decimals) / price; //CAVEAT: (10**decimals) represents one whole token in it's smallest unit
     }
 
     function getHealthFactor() public view returns (uint256) {

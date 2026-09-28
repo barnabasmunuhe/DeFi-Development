@@ -15,6 +15,7 @@ contract Supply {
     IPool public constant pool = IPool(POOL);
 
     // Task 1 - Supply token to Aave V3 pool
+    // onBehalfOf is the receiver of the aTokens(supply.sol).The supply contract is the one holding tokens & managing positions on user's behalf
     function supply(address token, uint256 amount) public {
         // Task 1.1 - Transfer token from msg.sender
         if (amount <= 0) {
