@@ -25,6 +25,7 @@ contract Withdraw {
     // can withdraw
     function getSupplyBalance(address token) public view returns (uint256) {
         // Task 1.1 - Get the aToken address from the pool contract
+        
         // Task 1.2 - Get the balance of aToken that this contract has
     }
 

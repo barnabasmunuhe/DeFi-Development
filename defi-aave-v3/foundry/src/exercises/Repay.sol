@@ -2,16 +2,15 @@
 pragma solidity ^0.8.28;
 
 import {console} from "forge-std/Test.sol";
-import {IERC20} from "../interfaces/IERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IPool} from "../interfaces/aave-v3/IPool.sol";
 import {IVariableDebtToken} from "../interfaces/aave-v3/IVariableDebtToken.sol";
 import {POOL} from "../Constants.sol";
-import {
-    SafeERC20
-} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+// This is a wrapper contract that acts as a middleman between users & the Aave pool.
 contract Repay {
-    using safeERC20 for IERC20;
+    using SafeERC20 for IERC20;
 
     IPool public constant pool = IPool(POOL);
 
