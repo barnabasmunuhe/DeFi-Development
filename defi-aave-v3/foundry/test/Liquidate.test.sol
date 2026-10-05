@@ -13,26 +13,29 @@ contract LiquidateTest is Test {
     IERC20 private constant dai = IERC20(DAI);
     IPool private constant pool = IPool(POOL);
     IAaveOracle private constant oracle = IAaveOracle(ORACLE);
-    Liquidate private target;
+    Liquidate private liquidateInstance;
+
+    uint256 amount = 1e18;
 
     function setUp() public {
         // Supply
-        deal(WETH, address(this), 1e18);
-        weth.approve(address(pool), type(uint256).max);
+        deal(WETH, address(this), amount);//wiring test cintract some WETH.
+        weth.approve(address(pool), type(uint256).max); //approving the pool contract to spend our tokens.
         pool.supply({
             asset: WETH,
-            amount: 1e18,
+            amount: amount,
             onBehalfOf: address(this),
             referralCode: 0
-        });
+        });//supplying WETH collateral to the pool
 
         // Borrow
+        // (FAKING ETH PRICE = $2000)-whenever anything queries the Aave Oracle for WETH's price return $2000
         vm.mockCall(
             ORACLE,
             abi.encodeCall(IAaveOracle.getAssetPrice, (WETH)),
             abi.encode(uint256(2000 * 1e8))
         );
-        pool.borrow({
+        pool.borrow({//borrowing DAI tokens
             asset: DAI,
             amount: 1000 * 1e18,
             interestRateMode: 2,
@@ -40,6 +43,7 @@ contract LiquidateTest is Test {
             onBehalfOf: address(this)
         });
 
+        // (CRASHING ETH price t0 $500)
         uint256 ethPrice = 500 * 1e8;
 
         vm.mockCall(
@@ -48,26 +52,26 @@ contract LiquidateTest is Test {
             abi.encode(ethPrice)
         );
 
-        target = new Liquidate();
+        liquidateInstance = new Liquidate(); // deploying new liquidate contract.
 
-        // Approve target to spend DAI
-        deal(DAI, address(this), 10000 * 1e18);
-        dai.approve(address(target), 10000 * 1e18);
+        // Approve liquidateInstance contract to spend DAI
+        deal(DAI, address(this), 10000 * amount); //minting loan DAI
+        dai.approve(address(liquidateInstance), 10000 * amount);
     }
 
     function test_liquidate() public {
-        (uint256 colUsdBefore, uint256 debtUsdBefore,,,,) =
-            pool.getUserAccountData(address(this));
+        // reading borrower's total collateral & debt in USD
+        (uint256 colUsdBefore, uint256 debtUsdBefore,,,,) = pool.getUserAccountData(address(this));
 
-        target.liquidate(WETH, DAI, address(this));
+        liquidateInstance.liquidate(WETH, DAI, address(this));
 
-        (uint256 colUsdAfter, uint256 debtUsdAfter,,,,) =
-            pool.getUserAccountData(address(this));
+        // Snapshot after
+        (uint256 colUsdAfter, uint256 debtUsdAfter,,,,) = pool.getUserAccountData(address(this));
 
         assertLt(colUsdAfter, colUsdBefore, "USD collateral after");
         assertLt(debtUsdAfter, debtUsdBefore, "USD debt after");
 
-        uint256 wethBal = weth.balanceOf(address(target));
+        uint256 wethBal = weth.balanceOf(address(liquidateInstance));
         console.log("WETH balance: %e", wethBal);
         assertGt(wethBal, 0, "WETH balance");
     }
