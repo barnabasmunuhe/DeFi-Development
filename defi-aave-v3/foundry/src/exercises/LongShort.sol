@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import {console} from "forge-std/Test.sol";
 import {IERC20} from "../interfaces/IERC20.sol";
@@ -11,6 +11,8 @@ import {Math} from "../lib/Math.sol";
 // Any caller can borrow on behalf of this contract and withdraw collateral from this contract.
 
 contract LongShort is Aave, Swap {
+    error low_Health_Factor();
+
     struct OpenParams {
         address collateralToken;
         uint256 collateralAmount;
@@ -31,12 +33,26 @@ contract LongShort is Aave, Swap {
         returns (uint256 collateralAmountOut)
     {
         // Task 1.1 - Check that params.minHealthFactor is greater than 1e18
+        if (params.minHealthFactor < 1e18) {
+            revert low_Health_Factor();
+        }
 
         // Task 1.2 - Transfer collateral from msg.sender
+        IERC20(params.collateralToken).transferFrom(
+            msg.sender, address(this), params.collateralAmount
+        );
 
         // Task 1.3
         // - Approve and supply collateral to Aave
+        IERC20(params.collateralToken).approve(Aave.pool, params.collateralAmount);
+        pool.supply({
+            asset: params.collateralToken,
+            amount: params.collateralAmount,
+            onBehalfOf: address(this),
+            referralCode: 0
+        });
         // - Send aToken to msg.sender
+        
 
         // Task 1.4
         // - Borrow token from Aave
