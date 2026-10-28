@@ -12,6 +12,7 @@ import {Math} from "../lib/Math.sol";
 
 contract LongShort is Aave, Swap {
     error low_Health_Factor();
+    error amount_Below_Zero();
 
     struct OpenParams {
         address collateralToken;
@@ -33,8 +34,12 @@ contract LongShort is Aave, Swap {
         returns (uint256 collateralAmountOut)
     {
         // Task 1.1 - Check that params.minHealthFactor is greater than 1e18
-        if (params.minHealthFactor < 1e18) {
+        if (params.minHealthFactor <= 1e18) {
             revert low_Health_Factor();
+        }
+
+        if(params.collateralAmount <= 0){
+            revert amount_Below_Zero();
         }
 
         // Task 1.2 - Transfer collateral from msg.sender
@@ -48,21 +53,40 @@ contract LongShort is Aave, Swap {
         pool.supply({
             asset: params.collateralToken,
             amount: params.collateralAmount,
-            onBehalfOf: address(this),
+            onBehalfOf: msg.sender,//Not address(this)!(Equivalent to sending aTokens to the caller of open)
             referralCode: 0
         });
-        // - Send aToken to msg.sender
-        
-
+       
         // Task 1.4
         // - Borrow token from Aave
         // - Borrow on behalf of msg.sender
+        pool.borrow({
+            asset: params.borrowToken,
+            amount: params.borrowAmount,
+            interestRateMode: 2,
+            referralCode: 0,
+            onBehalfOf: msg.sender
+        });
 
         // Task 1.5 - Check that health factor of msg.sender is > params.minHealthFactor
+        if (getHealthFactor(msg.sender) < params.minHealthFactor) {
+            revert low_Health_Factor();
+}
 
         // Task 1.6
         // - Swap borrowed token to collateral token
         // - Send swapped token to msg.sender
+        // Swap borrowed token to collateral token
+        IERC20(params.borrowToken).approve(address(router), params.borrowAmount);
+        return swap({
+            tokenIn: params.borrowToken,
+            tokenOut: params.collateralToken,
+            amountIn: params.borrowAmount,
+            amountOutMin: params.minSwapAmountOut,
+            receiver: msg.sender,
+            data: params.swapData
+        });
+        
     }
 
     struct CloseParams {
