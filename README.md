@@ -223,20 +223,24 @@ Focus areas include:
 
 ## Uniswap V2
 
-**Status:** ⏳ Planned
+**Status:** 🟡 In Progress
 
 Focus areas:
 
-* Constant-product AMM
-* `x * y = k`
-* Liquidity pools
-* LP tokens
-* Swaps
-* Pricing
-* Slippage
-* Router architecture
-* Factory architecture
-* Pair contracts
+- Constant-product AMM
+- x * y = k
+- Liquidity pools and LP tokens
+- Swap mechanics and pricing
+- Slippage and fees
+- Factory and Pair architecture
+- Core and Periphery contracts
+- Router architecture
+- Flash swaps
+- TWAP oracles
+- Protocol accounting
+- Security and invariant testing
+
+📁 [defi-uniswap-v2/](./defi-uniswap-v2/)
 
 ---
 
