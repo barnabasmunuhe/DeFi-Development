@@ -4,3 +4,9 @@
 [submodule "lib/aave-v3-core"]
 	path = lib/aave-v3-core
 	url = https://github.com/aave/aave-v3-core
+[submodule "defi-uniswap-v2/protocol/v2-core"]
+	path = defi-uniswap-v2/protocol/v2-core
+	url = https://github.com/Uniswap/v2-core.git
+[submodule "defi-uniswap-v2/protocol/v2-periphery"]
+	path = defi-uniswap-v2/protocol/v2-periphery
+	url = https://github.com/Uniswap/v2-periphery.git
